@@ -1,8 +1,24 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Paper, Container, Button, TextField } from '@material-ui/core';
+import { History } from './components/History/History';
 // Перенести усі стилі до відповідних scss файлів
 
 export const App = () => {
+  const [query, setQuery] = useState('');
+
+  const storedTtns = localStorage.getItem('ttns');
+  const parsedTtns: string[] = storedTtns ? JSON.parse(storedTtns) : [];
+
+  const submitHandler = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (query.trim() !== '') {
+      parsedTtns.push(query);
+      localStorage.setItem('ttns', JSON.stringify(parsedTtns));
+    }
+
+    setQuery('');
+  };
   return (
     <Container 
       style={{
@@ -28,20 +44,26 @@ export const App = () => {
             Список відділень
           </Button>
         </Container>
-        <Container style={{
-          display: 'flex',
-          alignItems: 'center',
-          marginBottom: '40px'
-        }}>
-          <TextField 
-            id="outlined-basic" 
-            label="Your TTN number" 
-            variant="outlined"
-            style={{ marginRight: '100px', minWidth: '250px' }}
-          />
-          <Button variant="contained">
-            Get status TTN
-          </Button>
+        <Container style={{marginBottom: '40px'}}>
+          <form 
+            style={{display: 'flex', alignItems: 'center'}}
+            onSubmit={submitHandler}
+          >
+            <TextField 
+              id="outlined-basic" 
+              label="Your TTN number" 
+              variant="outlined"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              style={{ marginRight: '100px', minWidth: '250px' }}
+            />
+            <Button 
+              variant="contained"
+              onClick={submitHandler}
+            >
+              Get status TTN
+            </Button>
+          </form>
         </Container>
         <Container 
           style={{
@@ -64,48 +86,7 @@ export const App = () => {
               <strong>Отримано: </strong>Відділення №13 (до 30 кг): просп. Гагаріна, 43
             </p>
           </Paper>
-          <Paper 
-            style={{
-              padding: '0 0 0 20px'
-            }}
-            elevation={3}
-          >
-            <h3>Історія</h3>
-            {/* Можна винести у окреми компонет <List /> */}
-            <ul 
-              style={{ 
-                overflow: 'auto', 
-                maxHeight: '150px',
-                paddingRight: '80px'
-              }}
-            >
-              {/* Можна винести у окреми компонент <ListItem /> */}
-              <li style={{ marginBottom: '20px' }}>
-                <strong>20400048799002</strong>
-              </li>
-              <li style={{ marginBottom: '20px' }}>
-                <strong>20400048799003</strong>
-              </li>
-              <li style={{ marginBottom: '20px' }}>
-                <strong>20400048799004</strong>
-              </li>
-              <li style={{ marginBottom: '20px' }}>
-                <strong>20400048799005</strong>
-              </li>
-              <li style={{ marginBottom: '20px' }}>
-                <strong>20400048799002</strong>
-              </li>
-              <li style={{ marginBottom: '20px' }}>
-                <strong>20400048799003</strong>
-              </li>
-              <li style={{ marginBottom: '20px' }}>
-                <strong>20400048799004</strong>
-              </li>
-              <li style={{ marginBottom: '20px' }}>
-                <strong>20400048799005</strong>
-              </li>
-            </ul>
-          </Paper>
+          <History />
         </Container>
       </Paper>
     </Container>
